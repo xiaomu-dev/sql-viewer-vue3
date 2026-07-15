@@ -22,8 +22,6 @@ export default defineConfig({
 					'element-plus': 'ElementPlus',
 					'@element-plus/icons-vue': 'ElementPlusIconsVue',
 				},
-				preserveModules: false, // 强制打包为单文件
-				inlineDynamicImports: true, // 内联所有动态导入
 			},
 		},
 	},
