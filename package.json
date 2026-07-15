@@ -1,6 +1,6 @@
 {
 	"name": "@xm-dev/sql-viewer-vue3",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Vue3 SQL editor component based on CodeMirror 6 & Element Plus, with syntax highlight, autocomplete, SQL formatter and database query console for admin projects.",
 	"type": "module",
 	"main": "./dist/sql-viewer-vue3.umd.js",
