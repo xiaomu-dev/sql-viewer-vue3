@@ -52,6 +52,15 @@
 		"codemirror": "^6.0.2",
 		"sql-formatter": "^15.8.2"
 	},
+	"bundledDependencies": [
+		"@codemirror/autocomplete",
+		"@codemirror/lang-sql",
+		"@codemirror/state",
+		"@codemirror/theme-one-dark",
+		"@codemirror/view",
+		"codemirror",
+		"sql-formatter"
+	],
 	"devDependencies": {
 		"@vitejs/plugin-vue": "^6.0.8",
 		"sass": "^1.101.0",
