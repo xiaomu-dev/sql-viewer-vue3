@@ -17,13 +17,13 @@
 	import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 
 	// CodeMirror
-	import { basicSetup } from '../vendor/codemirror';
-	import { EditorState } from '../vendor/@codemirror/state';
-	import { EditorView } from '../vendor/@codemirror/view';
-	import { sql } from '../vendor/@codemirror/lang-sql';
+	import { basicSetup } from 'codemirror';
+	import { EditorState } from '@codemirror/state';
+	import { EditorView } from '@codemirror/view';
+	import { sql } from '@codemirror/lang-sql';
 
 	// sql 格式化
-	import { format } from '../vendor/sql-formatter';
+	import { format } from 'sql-formatter';
 
 	// Element Plus 图标
 	import { VideoPlay, Tickets, Document } from '@element-plus/icons-vue';
