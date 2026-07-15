@@ -17,9 +17,7 @@
 	import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 
 	// CodeMirror
-	import { basicSetup } from 'codemirror';
-	import { EditorState } from '@codemirror/state';
-	import { EditorView } from '@codemirror/view';
+	import { basicSetup, EditorState, EditorView } from 'codemirror';
 	import { sql } from '@codemirror/lang-sql';
 
 	// sql 格式化

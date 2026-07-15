@@ -23,6 +23,7 @@ export default defineConfig({
 					'@element-plus/icons-vue': 'ElementPlusIconsVue',
 				},
 				preserveModules: false,
+				inlineDynamicImports: true,
 			},
 		},
 	},
