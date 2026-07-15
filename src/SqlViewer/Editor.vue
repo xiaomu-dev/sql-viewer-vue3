@@ -15,15 +15,13 @@
 <script setup>
 	// 依赖
 	import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
-
-	// CodeMirror
-	import { basicSetup } from 'codemirror';
-	import { EditorState } from '@codemirror/state';
-	import { EditorView } from '@codemirror/view';
-	import { sql } from '@codemirror/lang-sql';
-
 	// Element Plus 图标
 	import { VideoPlay, Tickets, Document } from '@element-plus/icons-vue';
+
+	// CodeMirror 变量预声明（移除顶层静态导入）
+	let basicSetup, EditorState, EditorView, sql;
+	let view = null;
+	const EditorRef = ref(null);
 
 	// 收 传 ------------------------------------------------------------------------------------
 	const props = defineProps({
@@ -45,40 +43,38 @@
 		}
 	};
 
-	// 主题 ------------------------------------------------------------------------------------
-	const theme_scroll = EditorView.theme({
-		'&': { height: '100%' },
-		'.cm-scroller': { overflow: 'auto' },
-	});
-	const theme_ep = EditorView.theme({
-		'.cm-gutters': { background: 'var(--el-fill-color-light)', borderColor: 'var(--el-border-color-dark)' },
-		'.cm-activeLineGutter': { background: 'var(--el-border-color-dark)', color: 'var(--el-text-color-primary) !important', fontWeight: 'bold' },
-		'.cm-gutterElement': { color: 'var(--el-text-color-secondary)' },
-	});
+	// 主题（延迟初始化，等codemirror加载完成再使用）
+	let theme_scroll, theme_ep;
 
 	// 自定义提示 ------------------------------------------------------------------------------------
 	const currTips = computed(() => props.tips.map(table => ({ label: table, type: 'variable', apply: table, boost: -99 })));
 	const customTip = context => {
-		let word = context.matchBefore(/\w+/); // 确保匹配至少一个字符
-		// 非显式触发且无匹配单词时不返回结果
+		let word = context.matchBefore(/\w+/);
 		if (!word && !context.explicit) return null;
 		const prefix = word?.text.toLowerCase() || '';
-		// 进行前缀匹配
 		const match = currTips.value.filter(item => item.label.toLowerCase().startsWith(prefix));
-		// 没有匹配项时不显示补全菜单
 		if (match.length === 0) return null;
 		return {
-			from: word?.from || context.pos, // 补全开始位置
-			options: match, // 只返回前缀匹配的选项
+			from: word?.from || context.pos,
+			options: match,
 		};
 	};
 
 	// 编辑器实例 创建 销毁 监听更新 更新编辑器 ------------------------------------------------------------------------------------
-	let view = null;
-	const EditorRef = ref(null);
 	const createEditor = () => {
 		destroyEditor();
-		if (!EditorRef.value) return;
+		if (!EditorRef.value || !EditorState) return;
+
+		// 初始化主题（现在EditorView已存在）
+		theme_scroll = EditorView.theme({
+			'&': { height: '100%' },
+			'.cm-scroller': { overflow: 'auto' },
+		});
+		theme_ep = EditorView.theme({
+			'.cm-gutters': { background: 'var(--el-fill-color-light)', borderColor: 'var(--el-border-color-dark)' },
+			'.cm-activeLineGutter': { background: 'var(--el-border-color-dark)', color: 'var(--el-text-color-primary) !important', fontWeight: 'bold' },
+			'.cm-gutterElement': { color: 'var(--el-text-color-secondary)' },
+		});
 
 		const state = EditorState.create({
 			doc: props.modelValue,
@@ -93,28 +89,33 @@
 	// 执行 -------------------------------------------------------------------------------------------
 	const clickRun = () => {
 		if (!view) return;
-		const sql = minify(view.state.doc.toString());
-		emits('run', sql);
+		const sqlText = minify(view.state.doc.toString());
+		emits('run', sqlText);
 	};
 
 	// 美化 -------------------------------------------------------------------------------------------
-	import { format } from 'sql-formatter';
-	const clickFormat = () => {
+	let format;
+	const clickFormat = async () => {
 		if (!view) return;
+		// sql-formatter 也动态导入，一并消除顶层依赖
+		if (!format) {
+			const fmt = await import('sql-formatter');
+			format = fmt.format;
+		}
 		try {
 			const val = view.state.doc.toString();
 			if (!val.trim()) return;
-			const sql = format(val, { language: 'sql', indent: '  ', uppercase: true });
-			updateEditor(sql);
+			const sqlText = format(val, { language: 'sql', indent: '  ', uppercase: true });
+			updateEditor(sqlText);
 		} catch (error) {
 			console.error('SQL格式化失败:', error);
 		}
 	};
 
 	// 压缩 -------------------------------------------------------------------------------------------
-	const minify = sql => {
+	const minify = sqlText => {
 		try {
-			let mv1 = sql;
+			let mv1 = sqlText;
 			if (!mv1.trim()) return '';
 
 			// 1: 移除注释
@@ -157,13 +158,28 @@
 	};
 	const clickMinify = () => {
 		if (!view) return;
-		const sql = minify(view.state.doc.toString());
-		updateEditor(sql);
+		const sqlText = minify(view.state.doc.toString());
+		updateEditor(sqlText);
 	};
 
 	// 周期 ------------------------------------------------------------------------------------
-	onMounted(() => createEditor());
+	onMounted(async () => {
+		// 运行时动态导入，绕过 Vite/Rollup 静态依赖扫描
+		const cm = await import('codemirror');
+		const stateMod = await import('@codemirror/state');
+		const viewMod = await import('@codemirror/view');
+		const sqlMod = await import('@codemirror/lang-sql');
+
+		basicSetup = cm.basicSetup;
+		EditorState = stateMod.EditorState;
+		EditorView = viewMod.EditorView;
+		sql = sqlMod.sql;
+
+		// 加载完成再创建编辑器
+		createEditor();
+	});
 	onUnmounted(() => destroyEditor());
+
 	// 暴露 ------------------------------------------------------------------------------------
 	defineExpose({
 		getEditorView: () => view,
