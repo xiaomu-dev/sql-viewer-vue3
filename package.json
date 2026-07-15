@@ -18,7 +18,7 @@
 	],
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
+		"build": "rollup -c",
 		"fix": "npm pkg fix",
 		"pub": "npm version patch && npm run build && npm publish --access public",
 		"pub:minor": "npm version minor && npm run build && npm publish --access public",
@@ -52,17 +52,13 @@
 		"codemirror": "^6.0.2",
 		"sql-formatter": "^15.8.2"
 	},
-	"bundledDependencies": [
-		"@codemirror/autocomplete",
-		"@codemirror/lang-sql",
-		"@codemirror/state",
-		"@codemirror/theme-one-dark",
-		"@codemirror/view",
-		"codemirror",
-		"sql-formatter"
-	],
 	"devDependencies": {
+		"@rollup/plugin-commonjs": "29.0.3",
+		"@rollup/plugin-node-resolve": "16.0.3",
 		"@vitejs/plugin-vue": "^6.0.8",
+		"rollup": "4.62.2",
+		"rollup-plugin-scss": "4.0.1",
+		"rollup-plugin-vue": "6.0.0",
 		"sass": "^1.101.0",
 		"vite": "^8.1.4",
 		"vite-plugin-css-injected-by-js": "^5.0.1",
