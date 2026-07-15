@@ -22,6 +22,7 @@ export default defineConfig({
 					'element-plus': 'ElementPlus',
 					'@element-plus/icons-vue': 'ElementPlusIconsVue',
 				},
+				preserveModules: false,
 			},
 		},
 	},
