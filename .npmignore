@@ -1,0 +1,15 @@
+# 开发依赖、配置
+node_modules
+vite.config.js
+.gitignore
+.npmrc
+# 日志、缓存
+*.log
+# 源码开发文件（只上传dist打包产物）
+src
+# git文件
+.git
+.github
+# 测试、文档草稿
+demo
+docs
