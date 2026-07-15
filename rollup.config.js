@@ -31,6 +31,7 @@ export default {
 	plugins: [
 		vue({
 			css: true,
+			preprocessStyles: true,
 		}),
 		scss(),
 		nodeResolve({
