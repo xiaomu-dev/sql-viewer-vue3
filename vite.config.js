@@ -14,12 +14,7 @@ export default defineConfig({
 			fileName: format => `sql-viewer-vue3.${format}.js`,
 		},
 		rollupOptions: {
-			// 只外置用户需要提供的三个包，其余全部打进 bundle
-			external: [
-				'vue',
-				'element-plus',
-				'@element-plus/icons-vue',
-			],
+			external: ['vue', 'element-plus', '@element-plus/icons-vue'],
 			output: {
 				exports: 'named',
 				globals: {
@@ -31,18 +26,5 @@ export default defineConfig({
 				inlineDynamicImports: true,
 			},
 		},
-	},
-	resolve: {
-		mainFields: ['module', 'main'],
-		// 确保所有依赖都能被正确解析并内联
-		dedupe: [
-			'@codemirror/state',
-			'@codemirror/view',
-			'@codemirror/autocomplete',
-			'@codemirror/lang-sql',
-			'@codemirror/theme-one-dark',
-			'codemirror',
-			'sql-formatter',
-		],
 	},
 });
